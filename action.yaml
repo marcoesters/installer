@@ -197,7 +197,9 @@ runs:
         STANDALONE_EXE="${{ inputs.standalone-location }}"
 
         if [[ -d "${CONDA_ROOT}" ]]; then
-            . "${CONDA_ROOT}/etc/profile.d/conda.sh" && conda activate
+            # Use eval to activate without requiring activation files:
+            # https://docs.conda.io/projects/conda/en/latest/dev-guide/deep-dives/activation.html#conda-activate
+            eval "$("${CONDA_ROOT}/bin/conda" shell.bash activate)"
         fi
         if [[ -n "$(command -v conda)" ]]; then
             CONDA_BIN=conda
@@ -223,7 +225,9 @@ runs:
             EXTRA_CONSTRUCTOR_ARGS+=" --conda-exe ${STANDALONE_EXE}"
         fi
         # Cannot use conda run due to https://github.com/conda/conda-standalone/issues/151
-        . "${PREFIX}/etc/profile.d/conda.sh" && conda activate
+        # Use eval to activate without requiring activation files:
+        # https://docs.conda.io/projects/conda/en/latest/dev-guide/deep-dives/activation.html#conda-activate
+        eval "$("${CONDA_BIN}" shell.bash activate)"
         constructor "${INPUT_DIR}"\
             --output-dir "${ARTIFACTS_DIRECTORY}"\
             --cache-dir "${CACHE_DIRECTORY}"\
